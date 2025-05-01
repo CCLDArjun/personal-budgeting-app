@@ -1,0 +1,15 @@
+dash
+dash_core_components
+dash_html_components
+dash_bootstrap_components
+dash_bootstrap_templates
+scikit-learn
+plotly
+plotly_express
+pandas
+numpy
+matplotlib
+seaborn
+Flask
+gunicorn
+google-cloud-storage
