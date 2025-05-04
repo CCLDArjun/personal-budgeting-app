@@ -1,30 +1,24 @@
 import dash
-from dash import html, dcc, dash_table, Input, Output, State, callback
+from dash import html, dcc, dash_table
 import dash_bootstrap_components as dbc
-import pandas as pd
 import plotly.express as px
-from datetime import datetime
-import os
+from components.expenses_components import (
+    load_data, 
+    get_category_options, 
+    get_table_columns,
+    register_expenses_callbacks,
+    create_graphs
+)
 
-# Register the page for Dash multi-page support
 dash.register_page(__name__, path='/expenses')
-
-DATA_FILE = 'data/spending.csv'
-
-# Helper to load data
-def load_data():
-    df = pd.read_csv(DATA_FILE)
-    df['Date'] = pd.to_datetime(df['Date'], format='mixed', errors='coerce')
-    return df
 
 # Layout
 def layout():
     df = load_data()
     total_spent = df['Amount'].sum()
     avg_spent = df['Amount'].mean()
-    category_totals = df.groupby('Category')['Amount'].sum().reset_index()
-    pie_fig = px.pie(category_totals, values='Amount', names='Category', title='Spending by Category')
-    line_fig = px.line(df, x='Date', y='Amount', title='Spending Over Time')
+    pie_fig, line_fig = create_graphs(df)
+    
     return html.Div([
         html.H1('Expenses Tracker', className='text-center my-4'),
         dbc.Row([
@@ -42,8 +36,8 @@ def layout():
             ]), width=6),
         ], className='mb-4'),
         dbc.Row([
-            dbc.Col(dcc.Graph(figure=pie_fig), width=6),
-            dbc.Col(dcc.Graph(figure=line_fig), width=6),
+            dbc.Col(dcc.Graph(id='pie-chart', figure=pie_fig), width=6),
+            dbc.Col(dcc.Graph(id='line-chart', figure=line_fig), width=6),
         ], className='mb-4'),
         dbc.Card([
             dbc.CardHeader('Add New Expense'),
@@ -55,7 +49,7 @@ def layout():
                     ], width=3),
                     dbc.Col([
                         dbc.Label('Category'),
-                        dbc.Select(id='expense-category', options=[{'label': c, 'value': c} for c in sorted(df['Category'].unique())])
+                        dbc.Select(id='expense-category', options=get_category_options(df))
                     ], width=3),
                     dbc.Col([
                         dbc.Label('Item'),
@@ -72,12 +66,7 @@ def layout():
         dash_table.DataTable(
             id='expenses-table',
             data=df.to_dict('records'),
-            columns=[
-                {'name': 'Date', 'id': 'Date'},
-                {'name': 'Category', 'id': 'Category'},
-                {'name': 'Item', 'id': 'Item'},
-                {'name': 'Amount', 'id': 'Amount', 'type': 'numeric', 'format': {'specifier': '$.2f'}}
-            ],
+            columns=get_table_columns(),
             style_table={'overflowX': 'auto'},
             style_cell={'textAlign': 'left', 'padding': '10px'},
             style_header={'backgroundColor': 'rgb(30, 30, 30)', 'color': 'white', 'fontWeight': 'bold'},
@@ -88,22 +77,5 @@ def layout():
         )
     ])
 
-# Callback to add new expense and update table
 def register_callbacks(app):
-    @app.callback(
-        Output('expenses-table', 'data'),
-        Input('add-expense-button', 'n_clicks'),
-        State('expense-date', 'value'),
-        State('expense-category', 'value'),
-        State('expense-item', 'value'),
-        State('expense-amount', 'value'),
-        prevent_initial_call=True
-    )
-    def add_expense(n_clicks, date, category, item, amount):
-        if n_clicks is None or not all([date, category, item, amount]):
-            return dash.no_update
-        df = load_data()
-        new_entry = pd.DataFrame([[date, category, item, float(amount)]], columns=["Date", "Category", "Item", "Amount"])
-        df = pd.concat([df, new_entry], ignore_index=True)
-        df.to_csv(DATA_FILE, index=False)
-        return df.to_dict('records')
+    register_expenses_callbacks(app)

@@ -4,14 +4,13 @@ import dash
 from dash import Dash, html
 import dash_bootstrap_components as dbc
 
-app = Dash(__name__, use_pages=True, external_stylesheets=[dbc.themes.DARKLY, '/assets/custom.css'])
+app = Dash(__name__, use_pages=True, external_stylesheets=[dbc.themes.DARKLY, '/assets/custom.css'], suppress_callback_exceptions=True)
 server = app.server
 
-# Register callbacks for the expenses page
 from pages import expenses
 expenses.register_callbacks(app)
 
-DATA_FILE = 'data/spending.csv'
+DATA_FILE = '/data/spending.csv'
 
 navbar = dbc.NavbarSimple(
     children=[
@@ -40,7 +39,7 @@ footer = dbc.Container(
 
 app.layout = html.Div([
     navbar,
-    html.Div(style={'height': '20px'}),  # small spacer between navbar and page
+    html.Div(style={'height': '20px'}),
     dash.page_container,
     footer,
 ])
