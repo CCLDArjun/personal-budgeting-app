@@ -5,3 +5,4 @@ automatic_scaling:
 entrypoint: gunicorn -b :8080 app:server
 env_variables:
   BUCKET_NAME: 'cs122-group5.appspot.com'
+  USE_GCS: '1'

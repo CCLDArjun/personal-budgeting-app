@@ -3,13 +3,40 @@ from dash import Input, Output, State
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objs as go
+import os
+import pandas as pd
+from google.cloud import storage
+import io
 
-DATA_FILE = 'data/spending.csv'
+USE_GCS = os.environ.get('USE_GCS', '0') == '1'  # Default: use local file
 
-def load_data():
-    df = pd.read_csv(DATA_FILE)
-    df['Date'] = pd.to_datetime(df['Date'], format='mixed', errors='coerce')
-    return df
+
+if USE_GCS:
+    BUCKET_NAME = 'cs122-group5.appspot.com'
+    BLOB_NAME = 'spending.csv'
+    def load_data():
+        client = storage.Client()
+        bucket = client.bucket(BUCKET_NAME)
+        blob = bucket.blob(BLOB_NAME)
+        data = blob.download_as_bytes()
+        df = pd.read_csv(io.BytesIO(data))
+        df['Date'] = pd.to_datetime(df['Date'], format='mixed', errors='coerce')
+        return df
+    def save_data(df):
+        client = storage.Client()
+        bucket = client.bucket(BUCKET_NAME)
+        blob = bucket.blob(BLOB_NAME)
+        csv_buffer = io.StringIO()
+        df.to_csv(csv_buffer, index=False)
+        blob.upload_from_string(csv_buffer.getvalue(), content_type='text/csv')
+else:
+    DATA_FILE = 'data/spending.csv'
+    def load_data():
+        df = pd.read_csv(DATA_FILE)
+        df['Date'] = pd.to_datetime(df['Date'], format='mixed', errors='coerce')
+        return df
+    def save_data(df):
+        df.to_csv(DATA_FILE, index=False)
 
 def get_category_options(df):
     return [{'label': c, 'value': c} for c in sorted(df['Category'].unique())]
@@ -38,7 +65,7 @@ def add_expense(n_clicks, date, category, item, amount):
     df = load_data()
     new_entry = pd.DataFrame([[date, category, item, float(amount)]], columns=["Date", "Category", "Item", "Amount"])
     df = pd.concat([df, new_entry], ignore_index=True)
-    df.to_csv(DATA_FILE, index=False)
+    save_data(df)
     return df.to_dict('records')
 
 def register_expenses_callbacks(app):
@@ -61,7 +88,7 @@ def register_expenses_callbacks(app):
         df = load_data()
         new_entry = pd.DataFrame([[date, category, item, float(amount)]], columns=["Date", "Category", "Item", "Amount"])
         df = pd.concat([df, new_entry], ignore_index=True)
-        df.to_csv(DATA_FILE, index=False)
+        save_data(df)
         
         pie_fig, line_fig = create_graphs(df)
         return df.to_dict('records'), pie_fig, line_fig 
