@@ -8,7 +8,11 @@ app = Dash(__name__, use_pages=True, external_stylesheets=[dbc.themes.DARKLY, '/
 server = app.server
 
 from pages import expenses
+from pages import login
+from pages import logout
 expenses.register_callbacks(app)
+login.register_callbacks(app)
+logout.register_callbacks(app)
 
 DATA_FILE = '/data/spending.csv'
 
@@ -16,6 +20,8 @@ navbar = dbc.NavbarSimple(
     children=[
         dbc.NavItem(dbc.NavLink("Home", href="/")),
         dbc.NavItem(dbc.NavLink("Expenses", href="/expenses")),
+        dbc.NavItem(dbc.NavLink("Login", href="/login")),
+        dbc.NavItem(dbc.NavLink("Logout", href="/logout")),
 
     ],
     brand=html.Span("Money Maestro", style={'fontSize': '24px', 'fontWeight': 'bold'}),

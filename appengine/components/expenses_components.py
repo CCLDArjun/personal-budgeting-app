@@ -7,6 +7,7 @@ import os
 import pandas as pd
 from google.cloud import storage
 import io
+from flask import request
 
 USE_GCS = os.environ.get('USE_GCS', '0') == '1'  # Default: use local file
 
@@ -59,15 +60,6 @@ def create_graphs(df):
     line_fig = px.line(df, x='Date', y='Amount', title='Spending Over Time')
     return pie_fig, line_fig
 
-def add_expense(n_clicks, date, category, item, amount):
-    if n_clicks is None or not all([date, category, item, amount]):
-        return dash.no_update
-    df = load_data()
-    new_entry = pd.DataFrame([[date, category, item, float(amount)]], columns=["Date", "Category", "Item", "Amount"])
-    df = pd.concat([df, new_entry], ignore_index=True)
-    save_data(df)
-    return df.to_dict('records')
-
 def register_expenses_callbacks(app):
     @app.callback(
         [Output('expenses-table', 'data'),
@@ -85,10 +77,12 @@ def register_expenses_callbacks(app):
             empty_fig = go.Figure()
             return dash.no_update, empty_fig, empty_fig
         
+        username = request.cookies.get('username')
         df = load_data()
-        new_entry = pd.DataFrame([[date, category, item, float(amount)]], columns=["Date", "Category", "Item", "Amount"])
+        new_entry = pd.DataFrame([[date, category, item, float(amount), username]], columns=["Date", "Category", "Item", "Amount", "Username"])
         df = pd.concat([df, new_entry], ignore_index=True)
         save_data(df)
         
+        df = df[df['Username'] == username]
         pie_fig, line_fig = create_graphs(df)
         return df.to_dict('records'), pie_fig, line_fig 

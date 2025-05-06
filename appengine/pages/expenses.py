@@ -9,18 +9,25 @@ from components.expenses_components import (
     register_expenses_callbacks,
     create_graphs
 )
+from flask import request
 
 dash.register_page(__name__, path='/expenses')
 
 # Layout
 def layout():
+    username = request.cookies.get('username')
+    if not username:
+        return html.Div([
+            html.H2("Please login to access this page.", className='text-center my-4'),
+        ])
     df = load_data()
+    df = df[df['Username'] == username]
     total_spent = df['Amount'].sum()
     avg_spent = df['Amount'].mean()
     pie_fig, line_fig = create_graphs(df)
     
     return html.Div([
-        html.H1('Expenses Tracker', className='text-center my-4'),
+        html.H1(f'Expenses Tracker for {username}', className='text-center my-4'),
         dbc.Row([
             dbc.Col(dbc.Card([
                 dbc.CardBody([
@@ -49,7 +56,7 @@ def layout():
                     ], width=3),
                     dbc.Col([
                         dbc.Label('Category'),
-                        dbc.Select(id='expense-category', options=get_category_options(df))
+                        dbc.Input(type='text', id='expense-category')
                     ], width=3),
                     dbc.Col([
                         dbc.Label('Item'),
@@ -65,7 +72,7 @@ def layout():
         ], className='mb-4'),
         dash_table.DataTable(
             id='expenses-table',
-            data=df.to_dict('records'),
+            data=df[df['Username'] == username].to_dict('records'),
             columns=get_table_columns(),
             style_table={'overflowX': 'auto'},
             style_cell={'textAlign': 'left', 'padding': '10px'},
