@@ -55,3 +55,24 @@ Access the deployed web application here: [https://cs122-group5.uw.r.appspot.com
    - `/components/`: Functions used for page callbacks.
       - `/data/`: Data for local deployment and testing.
    - `/pages/`: Routes for each page of the website.
+
+## Dependencies
+
+These are availible in `requirements.txt`, but laid out to see:
+```
+dash
+dash_core_components
+dash_html_components
+dash_bootstrap_components
+dash_bootstrap_templates
+scikit-learn
+plotly
+plotly_express
+pandas
+numpy
+matplotlib
+seaborn
+Flask
+gunicorn
+google-cloud-storage
+```
