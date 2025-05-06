@@ -56,7 +56,7 @@ def layout():
                     ], width=3),
                     dbc.Col([
                         dbc.Label('Category'),
-                        dbc.Input(type='text', id='expense-category')
+                        dbc.Select(id='expense-category', options=get_category_options(None))
                     ], width=3),
                     dbc.Col([
                         dbc.Label('Item'),

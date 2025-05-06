@@ -15,7 +15,6 @@ DEFAULT_CATEGORIES = [
     "Groceries",
     "Entertainment",
     "Transport",
-    "Coffee",
     "Utilities",
     "Dining",
     "Shopping",
@@ -33,6 +32,8 @@ if USE_GCS:
         data = blob.download_as_bytes()
         df = pd.read_csv(io.BytesIO(data))
         df['Date'] = pd.to_datetime(df['Date'], format='mixed', errors='coerce')
+        if 'Username' not in df.columns:
+            df['Username'] = None
         return df
     def save_data(df):
         client = storage.Client()
@@ -46,6 +47,8 @@ else:
     def load_data():
         df = pd.read_csv(DATA_FILE)
         df['Date'] = pd.to_datetime(df['Date'], format='mixed', errors='coerce')
+        if 'Username' not in df.columns:
+            df['Username'] = None
         return df
     def save_data(df):
         df.to_csv(DATA_FILE, index=False)
