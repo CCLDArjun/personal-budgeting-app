@@ -19,7 +19,6 @@ DATA_FILE = '/data/spending.csv'
 navbar = dbc.NavbarSimple(
     children=[
         dbc.NavItem(dbc.NavLink("Home", href="/")),
-        dbc.NavItem(dbc.NavLink("Expenses", href="/expenses")),
         dbc.NavItem(dbc.NavLink("Login", href="/login")),
         dbc.NavItem(dbc.NavLink("Logout", href="/logout")),
 

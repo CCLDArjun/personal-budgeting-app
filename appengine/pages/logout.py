@@ -1,6 +1,6 @@
 import dash
 from dash import html, dcc
-from flask import request, make_response, redirect
+from components.login_components import register_logout_routes
 
 dash.register_page(__name__, path='/logout')
 
@@ -10,9 +10,4 @@ layout = html.Div([
 ])
 
 def register_callbacks(app):
-# Flask route to clear the cookie
-    @app.server.route('/clear-cookie')
-    def clear_cookie():
-        resp = make_response(redirect('/'))  # Redirect to home after logout
-        resp.set_cookie('username', '', expires=0)
-        return resp
+    register_logout_routes(app)

@@ -11,14 +11,18 @@ from components.expenses_components import (
 )
 from flask import request
 
-dash.register_page(__name__, path='/expenses')
+dash.register_page(__name__, path='/')
 
 # Layout
 def layout():
     username = request.cookies.get('username')
     if not username:
         return html.Div([
-            html.H2("Please login to access this page.", className='text-center my-4'),
+            html.H2([
+                "Please ",
+                html.A("login", href="/login"),
+                " to access this page."
+            ], className='text-center my-4')
         ])
     df = load_data()
     df = df[df['Username'] == username]
