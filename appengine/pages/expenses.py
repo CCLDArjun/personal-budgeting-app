@@ -1,19 +1,17 @@
 import dash
 from dash import html, dcc, dash_table
 import dash_bootstrap_components as dbc
-import plotly.express as px
+from flask import request
 from components.expenses_components import (
-    load_data, 
-    get_category_options, 
+    load_data,
+    get_category_options,
     get_table_columns,
     register_expenses_callbacks,
     create_graphs
 )
-from flask import request
 
 dash.register_page(__name__, path='/')
 
-# Layout
 def layout():
     username = request.cookies.get('username')
     if not username:
@@ -24,14 +22,17 @@ def layout():
                 " to access this page."
             ], className='text-center my-4')
         ])
+
     df = load_data()
     df = df[df['Username'] == username]
     total_spent = df['Amount'].sum()
     avg_spent = df['Amount'].mean()
     pie_fig, line_fig = create_graphs(df)
-    
+
     return html.Div([
         html.H1(f'Expenses Tracker for {username}', className='text-center my-4'),
+
+        # Metrics Cards
         dbc.Row([
             dbc.Col(dbc.Card([
                 dbc.CardBody([
@@ -46,10 +47,44 @@ def layout():
                 ])
             ]), width=6),
         ], className='mb-4'),
+
+        # Graphs
         dbc.Row([
             dbc.Col(dcc.Graph(id='pie-chart', figure=pie_fig), width=6),
             dbc.Col(dcc.Graph(id='line-chart', figure=line_fig), width=6),
         ], className='mb-4'),
+
+        # Goal Setting
+        dbc.Card([
+            dbc.CardHeader('Set Spending Goals'),
+            dbc.CardBody([
+                dbc.Row([
+                    dbc.Col([
+                        dbc.Label("Monthly Goal"),
+                        dbc.Input(id='monthly-goal-input', type='number', step='0.01')
+                    ], width=6),
+                    dbc.Col([
+                        dbc.Label("Yearly Goal"),
+                        dbc.Input(id='yearly-goal-input', type='number', step='0.01')
+                    ], width=6),
+                ]),
+                dbc.Button("Save Goals", id='save-goals-btn', color='success', className='mt-3')
+            ])
+        ], className='mb-4'),
+
+        # Goal Progress
+        dbc.Card([
+            dbc.CardHeader("Goal Progress"),
+            dbc.CardBody([
+                html.H5("Monthly Progress"),
+                dbc.Progress(id='monthly-progress-bar', striped=True, animated=True, style={'height': '25px'}),
+                html.Br(),
+                html.H5("Yearly Progress"),
+                dbc.Progress(id='yearly-progress-bar', striped=True, animated=True, style={'height': '25px'})
+            ])
+        ], className='mb-4'),
+
+        # Add Expense
         dbc.Card([
             dbc.CardHeader('Add New Expense'),
             dbc.CardBody([
@@ -74,9 +109,11 @@ def layout():
                 dbc.Button('Add Expense', id='add-expense-button', color='primary', className='mt-3')
             ])
         ], className='mb-4'),
+
+        # Expenses Table
         dash_table.DataTable(
             id='expenses-table',
-            data=df[df['Username'] == username].to_dict('records'),
+            data=df.to_dict('records'),
             columns=get_table_columns(),
             style_table={'overflowX': 'auto'},
             style_cell={'textAlign': 'left', 'padding': '10px'},
@@ -85,7 +122,7 @@ def layout():
             sort_action='native',
             filter_action='native',
             page_size=10
-        )
+        ),
     ])
 
 def register_callbacks(app):
