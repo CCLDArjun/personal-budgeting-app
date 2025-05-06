@@ -10,6 +10,17 @@ import io
 
 USE_GCS = os.environ.get('USE_GCS', '0') == '1'  # Default: use local file
 
+DEFAULT_CATEGORIES = [
+    "Groceries",
+    "Entertainment",
+    "Transport",
+    "Coffee",
+    "Utilities",
+    "Dining",
+    "Shopping",
+    "Health",
+    "Other"
+]
 
 if USE_GCS:
     BUCKET_NAME = 'cs122-group5.appspot.com'
@@ -38,8 +49,8 @@ else:
     def save_data(df):
         df.to_csv(DATA_FILE, index=False)
 
-def get_category_options(df):
-    return [{'label': c, 'value': c} for c in sorted(df['Category'].unique())]
+def get_category_options(df=None):
+    return [{'label': c, 'value': c} for c in sorted(DEFAULT_CATEGORIES)]
 
 def get_table_columns():
     return [
