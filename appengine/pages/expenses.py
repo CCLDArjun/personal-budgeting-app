@@ -123,9 +123,6 @@ def layout():
             filter_action='native',
             page_size=10
         ),
-
-        # Store for Goals
-        dcc.Store(id='goals-store', storage_type='local')
     ])
 
 def register_callbacks(app):
