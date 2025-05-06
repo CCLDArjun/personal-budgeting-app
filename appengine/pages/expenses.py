@@ -60,11 +60,11 @@ def layout():
             dbc.CardBody([
                 dbc.Row([
                     dbc.Col([
-                        dbc.Label("Monthly Goal"),
+                        dbc.Label("Monthly Spending Limit"),
                         dbc.Input(id='monthly-goal-input', type='number', step='0.01')
                     ], width=6),
                     dbc.Col([
-                        dbc.Label("Yearly Goal"),
+                        dbc.Label("Annual Spending Limit"),
                         dbc.Input(id='yearly-goal-input', type='number', step='0.01')
                     ], width=6),
                 ]),
@@ -76,10 +76,10 @@ def layout():
         dbc.Card([
             dbc.CardHeader("Goal Progress"),
             dbc.CardBody([
-                html.H5("Monthly Progress"),
+                html.H5("Monthly Spending Limit"),
                 dbc.Progress(id='monthly-progress-bar', striped=True, animated=True, style={'height': '25px'}),
                 html.Br(),
-                html.H5("Yearly Progress"),
+                html.H5("Annual Spending Limit"),
                 dbc.Progress(id='yearly-progress-bar', striped=True, animated=True, style={'height': '25px'})
             ])
         ], className='mb-4'),

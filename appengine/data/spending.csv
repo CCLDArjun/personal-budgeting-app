@@ -13,4 +13,7 @@ Date,Category,Item,Amount,Username
 2025-05-06 00:00:00,Dining,Steak,500.0,asd
 2025-05-05 00:00:00,Dining,macaroni,100.0,Default
 2025-05-05 00:00:00,Dining,macaroniii,100.0,Default
-2025-05-05,Dining,macaroniii,100.0,Default
+2025-05-05 00:00:00,Dining,macaroniii,100.0,Default
+2025-05-06 00:00:00,Entertainment,tv,6000.0,asd
+2025-05-06 00:00:00,Dining,mac,200.0,asd
+2025-05-09,Health,gym,300.0,asd
