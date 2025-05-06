@@ -1,10 +1,16 @@
 
 # CS122 Group 5: Money Maestro
 
+Members: Kevin Cui, Arjun Bemarkar
+
 ## Project Overview
 
 Repository is a finance website designed to show visualizations of user expenses.
 Users would input date, spending category, item, and amount. This will be shown in a pie chart to show the split in the total spending. A line graph will be used to handle spending over a period of time.
+
+## Live Website
+
+Access the deployed web application here: [https://cs122-group5.uw.r.appspot.com/](https://cs122-group5.uw.r.appspot.com/)
 
 ## Setup Instructions
 
@@ -27,6 +33,7 @@ Users would input date, spending category, item, and amount. This will be shown 
    python -m venv .venv
    source ./.venv/bin/activate  # On Windows: .\.venv\Scripts\activate
    cd appengine
+   pip install -r requirements.txt
    python app.py
    ```
 
@@ -48,7 +55,3 @@ Users would input date, spending category, item, and amount. This will be shown 
    - `/components/`: Functions used for page callbacks.
       - `/data/`: Data for local deployment and testing.
    - `/pages/`: Routes for each page of the website.
-
-## 🔗 Live Website
-
-Access the deployed web application here: [https://cs122-group5.uw.r.appspot.com/](https://cs122-group5.uw.r.appspot.com/)
