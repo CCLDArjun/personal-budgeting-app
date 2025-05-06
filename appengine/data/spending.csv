@@ -1,13 +1,16 @@
 Date,Category,Item,Amount,Username
-2025-04-01 00:00:00,Groceries,Walmart,75.2,
-2025-04-02 00:00:00,Entertainment,Netflix Subscription,15.99,
-2025-04-03 00:00:00,Transport,Gas Station,45.0,
-2025-04-04 00:00:00,Groceries,Trader Joe's,32.5,
-2025-04-05 00:00:00,Coffee,Starbucks,5.45,
-2025-04-06 00:00:00,Utilities,Electric Bill,60.0,
-2025-04-07 00:00:00,Entertainment,Movie Ticket,12.0,
-2025-04-08 00:00:00,Transport,Bus Pass,20.0,
-2025-05-01 00:00:00,Entertainment,WoW,25.0,
-2025-05-07 00:00:00,Other,Ring,500.0,
-2025-05-09 00:00:00,Coffee,Log,222.0,
-2025-05-06,Dining,Steak,500.0,asd
+2025-04-01 00:00:00,Groceries,Walmart,75.2,Default
+2025-04-02 00:00:00,Entertainment,Netflix Subscription,15.99,Default
+2025-04-03 00:00:00,Transport,Gas Station,45.0,Default
+2025-04-04 00:00:00,Groceries,Trader Joe's,32.5,Default
+2025-04-05 00:00:00,Coffee,Starbucks,5.45,Default
+2025-04-06 00:00:00,Utilities,Electric Bill,60.0,Default
+2025-04-07 00:00:00,Entertainment,Movie Ticket,12.0,Default
+2025-04-08 00:00:00,Transport,Bus Pass,20.0,Default
+2025-05-01 00:00:00,Entertainment,WoW,25.0,Default
+2025-05-07 00:00:00,Other,Ring,500.0,Default
+2025-05-09 00:00:00,Coffee,Log,222.0,Default
+2025-05-06 00:00:00,Dining,Steak,500.0,asd
+2025-05-05 00:00:00,Dining,macaroni,100.0,Default
+2025-05-05 00:00:00,Dining,macaroniii,100.0,Default
+2025-05-05,Dining,macaroniii,100.0,Default
