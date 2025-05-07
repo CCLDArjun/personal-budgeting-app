@@ -53,7 +53,7 @@ Access the deployed web application here: [https://cs122-group5.uw.r.appspot.com
 - `/appengine/`: Houses the web app functionality, components, data, routes.
    - `/assets/`: For custom CSS styling.
    - `/components/`: Functions used for page callbacks.
-      - `/data/`: Data for local deployment and testing.
+   - `/data/`: Data for local deployment and testing.
    - `/pages/`: Routes for each page of the website.
 
 ## Dependencies
