@@ -1,6 +1,6 @@
 import unittest
 
-from components.login_components import check_user_password, register_user
+from appengine.components.login_components import check_user_password, register_user
 
 class TestLoginComponents(unittest.TestCase):
     def setUp(self):
