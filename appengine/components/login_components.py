@@ -7,6 +7,13 @@ import os
 
 USER_DB_FILE = 'users.pkl'
 
+def check_user_password(username, password, users):
+    return username in users and users[username] == password
+
+def register_user(username, password, users):
+    users[username] = password
+    return users
+
 def register_logout_routes(app):
     @app.server.route('/clear-cookie')
     def clear_cookie():
@@ -51,12 +58,12 @@ def register_login_routes(app):
         if button_id == 'signup-btn':
             if username in users:
                 return "Username already exists."
-            users[username] = password
+            register_user(username, password, users)
             save_users(users)
             return "Signup successful. You can now log in."
 
         elif button_id == 'login-btn':
-            if users.get(username) == password:
+            if check_user_password(username, password, users):
                 # Provide a link to trigger the cookie-setting route
                 return html.Div([
                     html.Span(f"Welcome back, {username}! "),
