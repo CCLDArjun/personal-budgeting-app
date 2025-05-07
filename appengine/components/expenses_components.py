@@ -24,30 +24,64 @@ DEFAULT_CATEGORIES = [
     "Other"
 ]
 
-# If using GCS, set up the bucket and blob name
-# If not, use the local file path
+# If using GCS, set up the bucket and blob names
+# If not, use the local file paths
 if USE_GCS:
     BUCKET_NAME = 'cs122-group5.appspot.com'
-    BLOB_NAME = 'spending.csv'
+    SPENDING_BLOB_NAME = 'spending.csv'
+    GOALS_BLOB_NAME = 'goals.json'
+    
+    def get_storage_client():
+        return storage.Client()
+    
+    def get_bucket():
+        client = get_storage_client()
+        return client.bucket(BUCKET_NAME)
+    
     def load_data():
-        client = storage.Client()
-        bucket = client.bucket(BUCKET_NAME)
-        blob = bucket.blob(BLOB_NAME)
-        data = blob.download_as_bytes()
-        df = pd.read_csv(io.BytesIO(data))
-        df['Date'] = pd.to_datetime(df['Date'], format='mixed', errors='coerce')
-        if 'Username' not in df.columns:
-            df['Username'] = None
-        return df
+        try:
+            bucket = get_bucket()
+            blob = bucket.blob(SPENDING_BLOB_NAME)
+            data = blob.download_as_bytes()
+            df = pd.read_csv(io.BytesIO(data))
+            df['Date'] = pd.to_datetime(df['Date'], format='mixed', errors='coerce')
+            if 'Username' not in df.columns:
+                df['Username'] = None
+            return df
+        except Exception:
+            # If file doesn't exist or other error, return empty DataFrame
+            return pd.DataFrame(columns=["Date", "Category", "Item", "Amount", "Username"])
+    
     def save_data(df):
-        client = storage.Client()
-        bucket = client.bucket(BUCKET_NAME)
-        blob = bucket.blob(BLOB_NAME)
+        bucket = get_bucket()
+        blob = bucket.blob(SPENDING_BLOB_NAME)
         csv_buffer = io.StringIO()
         df.to_csv(csv_buffer, index=False)
         blob.upload_from_string(csv_buffer.getvalue(), content_type='text/csv')
+    
+    def load_goals():
+        goals = defaultdict(lambda: {'monthly': 0, 'yearly': 0})
+        try:
+            bucket = get_bucket()
+            blob = bucket.blob(GOALS_BLOB_NAME)
+            data = blob.download_as_bytes()
+            goals_dict = json.loads(data.decode('utf-8'))
+            for username, goal in goals_dict.items():
+                goals[username]['monthly'] = goal.get('monthly', 0)
+                goals[username]['yearly'] = goal.get('yearly', 0)
+        except Exception:
+            # If file doesn't exist or other error, return empty goals
+            pass
+        return goals
+
+    def store_goals(goals):
+        bucket = get_bucket()
+        blob = bucket.blob(GOALS_BLOB_NAME)
+        blob.upload_from_string(json.dumps(goals), content_type='application/json')
 else:
     DATA_FILE = 'data/spending.csv'
+    GOALS_FILE = 'data/goals.json'
+    
     def load_data():
         expected_columns = ["Date", "Category", "Item", "Amount", "Username"]
         # Check if file exists and is not empty
@@ -63,24 +97,23 @@ else:
         if 'Username' not in df.columns:
             df['Username'] = None
         return df
+    
     def save_data(df):
         df.to_csv(DATA_FILE, index=False)
 
-# Loads and stores user goals
-GOALS_FILE = 'data/goals.json'
-def load_goals():
-    goals = defaultdict(lambda: {'monthly': 0, 'yearly': 0})
-    if os.path.exists(GOALS_FILE):
-        with open(GOALS_FILE, 'r') as f:
-            goals_dict = json.load(f)
-            for username, goal in goals_dict.items():
-                goals[username]['monthly'] = goal.get('monthly', 0)
-                goals[username]['yearly'] = goal.get('yearly', 0)
-    return goals
+    def load_goals():
+        goals = defaultdict(lambda: {'monthly': 0, 'yearly': 0})
+        if os.path.exists(GOALS_FILE):
+            with open(GOALS_FILE, 'r') as f:
+                goals_dict = json.load(f)
+                for username, goal in goals_dict.items():
+                    goals[username]['monthly'] = goal.get('monthly', 0)
+                    goals[username]['yearly'] = goal.get('yearly', 0)
+        return goals
 
-def store_goals(goals):
-    with open(GOALS_FILE, 'w') as f:
-        json.dump(goals, f)
+    def store_goals(goals):
+        with open(GOALS_FILE, 'w') as f:
+            json.dump(goals, f)
 
 
 def get_category_options(df=None):

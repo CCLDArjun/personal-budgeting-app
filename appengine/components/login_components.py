@@ -4,8 +4,44 @@ from dash.dependencies import Input, Output, State
 import dash
 import pickle
 import os
+import pandas as pd
+from google.cloud import storage
+import io
 
-USER_DB_FILE = 'users.pkl'
+USE_GCS = os.environ.get('USE_GCS', '0') == '1'  # Default: use local file
+
+if USE_GCS:
+    BUCKET_NAME = 'cs122-group5.appspot.com'
+    USERS_BLOB_NAME = 'users.pkl'
+    
+    def load_users():
+        try:
+            client = storage.Client()
+            bucket = client.bucket(BUCKET_NAME)
+            blob = bucket.blob(USERS_BLOB_NAME)
+            data = blob.download_as_bytes()
+            return pickle.loads(data)
+        except Exception:
+            # If file doesn't exist or other error, return empty DataFrame
+            return pd.DataFrame(columns=['username', 'password'])
+
+    def save_users(users_df):
+        client = storage.Client()
+        bucket = client.bucket(BUCKET_NAME)
+        blob = bucket.blob(USERS_BLOB_NAME)
+        blob.upload_from_string(pickle.dumps(users_df), content_type='application/octet-stream')
+else:
+    USER_DB_FILE = 'data/users.pkl'
+    
+    def load_users():
+        if os.path.exists(USER_DB_FILE):
+            with open(USER_DB_FILE, 'rb') as f:
+                return pickle.load(f)
+        return pd.DataFrame(columns=['username', 'password'])
+
+    def save_users(users_df):
+        with open(USER_DB_FILE, 'wb') as f:
+            pickle.dump(users_df, f)
 
 def check_user_password(username, password, users):
     return username in users and users[username] == password
@@ -22,16 +58,6 @@ def register_logout_routes(app):
         return resp
 
 def register_login_routes(app):
-    def load_users():
-        if os.path.exists(USER_DB_FILE):
-            with open(USER_DB_FILE, 'rb') as f:
-                return pickle.load(f)
-        return {}
-
-    def save_users(users):
-        with open(USER_DB_FILE, 'wb') as f:
-            pickle.dump(users, f)
-
     @app.server.route('/set-cookie/<username>')
     def set_cookie(username):
         from flask import make_response, redirect
