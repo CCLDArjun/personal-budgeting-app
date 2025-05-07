@@ -137,6 +137,7 @@ def register_expenses_callbacks(app):
         username = request.cookies.get('username')
         df = load_data()
         new_entry = pd.DataFrame([[date, category, item, float(amount), username]], columns=["Date", "Category", "Item", "Amount", "Username"])
+        print(f"New entry: {new_entry}")
         df = pd.concat([df, new_entry], ignore_index=True)
         save_data(df)
         
