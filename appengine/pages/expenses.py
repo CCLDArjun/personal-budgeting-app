@@ -37,13 +37,13 @@ def layout():
             dbc.Col(dbc.Card([
                 dbc.CardBody([
                     html.H4('Total Spent'),
-                    html.H2(f"${total_spent:.2f}")
+                    html.H2(id='total-spent-text')
                 ])
             ]), width=6),
             dbc.Col(dbc.Card([
                 dbc.CardBody([
                     html.H4('Average Transaction'),
-                    html.H2(f"${avg_spent:.2f}")
+                    html.H2(id='avg-transaction-text')
                 ])
             ]), width=6),
         ], className='mb-4'),

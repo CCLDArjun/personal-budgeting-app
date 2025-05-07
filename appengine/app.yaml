@@ -1,3 +1,5 @@
+# app.yaml: Configuration file for deploying the app on Google App Engine.
+# Sets runtime, scaling, entrypoint, and environment variables.
 runtime: python310
 automatic_scaling:
   target_cpu_utilization: 0.90

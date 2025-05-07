@@ -1,3 +1,5 @@
+# app.py: Main entry point for the Dash/Flask budgeting app.
+# Sets up the Dash app, navigation, layout, and registers all page callbacks.
 from flask import Flask, render_template, request, redirect
 import pandas as pd
 import dash

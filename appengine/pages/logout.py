@@ -1,3 +1,4 @@
+# logout.py: Handles the logout page and related logic for user sign-out in the budgeting app.
 import dash
 from dash import html, dcc
 from components.login_components import register_logout_routes

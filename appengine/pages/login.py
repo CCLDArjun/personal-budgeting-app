@@ -1,3 +1,4 @@
+# login.py: Handles the login page and related callbacks for user authentication in the budgeting app.
 import dash
 from dash import html, dcc
 from dash.dependencies import Input, Output, State
